@@ -1,0 +1,82 @@
+class Solution(object):
+    def findMinStep(self, board, hand):
+        def getBalls(balls):
+            ballList = []
+            for ball in balls:
+                if not ballList or ballList[-1][0] != ball:
+                    if ballList and ballList[-1][1] >= 3:
+                        ballList.pop(-1)
+                    ballList.append([ball, 1])
+                elif ball == ballList[-1][0]:
+                    ballList[-1][1] += 1
+            return ballList
+
+        def combineBalls(balls1, balls2):
+            ans = dict(balls1)
+            for key, value in balls2.items():
+                if key in ans:
+                    ans[key] += value
+                else:
+                    ans[key] = value
+            return ans
+
+        def cntBalls(balls):
+            return sum(balls.values())
+
+        def updateAns(ans1, ans2):
+            if cntBalls(ans1) < cntBalls(ans2) and checkAvailable(ans1, ballsInHand) >= 0:
+                return ans1
+            return ans2
+
+        def checkAvailable(balls, ballsInHand):
+            for key, value in balls.items():
+                if balls[key] != 0:
+                    if key not in ballsInHand:
+                        return -1
+                    if ballsInHand[key] < value:
+                        return -1
+            return sum(balls.values())
+
+        def memorySearch(start, end):
+            if end < start:
+                return {}
+            elif (start, end) in history:
+                return history[(start, end)]
+            elif start == end:
+                return {ballsTable[start][0]: 3 - ballsTable[start][1]}
+            elif start + 1 == end:
+                return combineBalls(memorySearch(start, start), memorySearch(end, end))
+
+            thisAns = {"R":float("inf")}
+            firstColor, lastColor = ballsTable[start][0], ballsTable[end][0]
+            for k in range(start, end):
+                thisBalls = combineBalls(memorySearch(start, k), memorySearch(k+1, end))
+                thisAns = updateAns(thisBalls, thisAns)
+            if firstColor == lastColor:
+                toAdd = max(0, 3 - ballsTable[start][1] - ballsTable[end][1])
+                thisBalls = combineBalls(memorySearch(start+1, end-1), {firstColor: toAdd})
+                thisAns = updateAns(thisBalls, thisAns)
+            if firstColor == lastColor and 1 in (ballsTable[start][1], ballsTable[end][1]):
+                idx = start + 1
+                while idx < end:
+                    if ballsTable[idx][0] == firstColor and ballsTable[idx][1] == 1:
+                        thisBalls = combineBalls(memorySearch(start + 1, idx - 1), memorySearch(idx + 1, end - 1))
+                        thisAns = updateAns(thisBalls, thisAns)
+                    idx += 1
+            history[(start, end)] = thisAns
+            return thisAns
+
+        # Initialization
+        ballsTable = getBalls(board)
+        ballsInHand = {}
+        for ball in hand:
+            ballsInHand[ball] = ballsInHand.get(ball, 0) + 1
+        history = {}
+        length = len(ballsTable)
+        return checkAvailable(memorySearch(0, length - 1), ballsInHand)
+
+val=Solution()
+n,a=map(str,input().split())
+hand=(a)
+board=input()
+print(val.findMinStep(board,hand))
