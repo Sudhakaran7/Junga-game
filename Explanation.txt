@@ -1,0 +1,57 @@
+Think about Junga Game. You have a row of balls on the table, colored red(R), yellow(Y), blue(B), green(G), and white(W). You also have several balls in your hand.
+Each time, you may choose a ball in your hand, and insert it into the row (including the leftmost place and rightmost place). 
+Then, if there is a group of 3 or more balls in the same color touching, remove these balls. Keep doing this until no more balls can be removed.
+Find the minimal balls you have to insert to remove all the balls on the table. If you cannot remove all the balls, output -1.
+
+Input Description:
+First line contains hand as an string.
+Second line contains board as a string.
+
+Output Description:
+Print the minimal balls you have to insert to remove all the balls on the table. If you cannot remove all the balls, output -1.
+
+Sample Input:
+WRBRW
+WWRRBBWW
+
+Sample Output:
+2
+
+Explanation:
+The steps of eleminating, WWRRBBWW -> WWRR[R]BBWW -> WWBBWW -> WWBB[B]WW -> WWWW -> empty
+So we use R and B so the outptu is 2.
+
+Sample Input:
+BRWR
+RRWWBB
+
+Sample Output:
+3
+
+Sample Input:
+WR
+BBWWRR
+
+Sample Output:
+-1
+
+Sample Input:
+YRBGB
+RBYYBBRRB
+
+Sample Output:
+3
+
+Sample Input:
+YBRW
+YBBRYWRW
+
+Sample Output:
+-1
+
+Sample Input:
+BYWR
+BBWYYWRR
+
+Sample Output:
+4
